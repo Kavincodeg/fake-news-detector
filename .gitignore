@@ -1,0 +1,9 @@
+# Large files (must ignore)
+data/
+*.csv
+model.pkl
+vectorizer.pkl
+
+# Python cache
+__pycache__/
+*.pyc
