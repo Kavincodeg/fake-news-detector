@@ -4,13 +4,6 @@ from bs4 import BeautifulSoup
 import re
 from urllib.parse import urlparse
 
-# Selenium (for difficult/protected sites)
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-import time
-
 
 # 🚫 Detect blocked/invalid content (Cloudflare etc.)
 def is_blocked_content(text):
@@ -69,32 +62,7 @@ def extract_text_from_url(url):
     except Exception as e:
         print("BeautifulSoup error:", e)
 
-    # 3️⃣ Selenium fallback (for Cloudflare-like sites)
-    try:
-        options = webdriver.ChromeOptions()
-        options.add_argument("--headless")
-        options.add_argument("--disable-blink-features=AutomationControlled")
-
-        driver = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install()),
-            options=options
-        )
-
-        driver.get(url)
-        time.sleep(5)
-
-        paragraphs = driver.find_elements(By.TAG_NAME, "p")
-        text = " ".join([p.text for p in paragraphs])
-
-        driver.quit()
-
-        if text and len(text) > 300 and not is_blocked_content(text):
-            return text
-
-    except Exception as e:
-        print("Selenium error:", e)
-
-    # ❌ Final fallback (failed extraction)
+    # ❌ No Selenium in deployment
     return None
 
 
